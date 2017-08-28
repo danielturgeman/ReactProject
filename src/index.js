@@ -1,8 +1,19 @@
 //Every module is seperate in react, need to import to gain access
 //Find the library installed in my application as a dependency in the node_modules folder
 //And assign that library to the variable React
+//cmd npm install --save youtube-api-search
+//--save saves it to our package.json file  which is a list of all the dependencies
+//that our project has
+
 import React from 'react';
 import ReactDOM from 'react-DOM';
+//For our own user-made files we need to include relative path, unlike downloaded folders and
+//dependencies which are entire namespaces.for Libraries that we installed with npm we can
+//just write name of the package
+import SearchBar from './components/search_bar';
+
+const API_KEY = 'AIzaSyCXE7B7GWJhJ1262cLCr8JA4rar5zPqJB4';
+
 
 //Create components (views) that produce HTML using js (webpack and babel transpile)
 //The JSX and ES6 to standard JS the browser can run
@@ -36,7 +47,11 @@ import ReactDOM from 'react-DOM';
 
 
 const App = () => {
-    return <div>Hi!</div>
+    return( 
+      <div>
+        <SearchBar />
+      </div>
+    );
 }
 
 //Step 2: A couple of wrong ways to approch the rendering to the DOM. Need to pass instance,
