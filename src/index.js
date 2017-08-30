@@ -5,6 +5,7 @@
 //--save saves it to our package.json file  which is a list of all the dependencies
 //that our project has
 
+import _ from 'lodash';
 import React, { Component } from 'react';
 import ReactDOM from 'react-DOM';
 
@@ -59,7 +60,9 @@ const API_KEY = 'AIzaSyCXE7B7GWJhJ1262cLCr8JA4rar5zPqJB4';
 //that we get inside the app is going to change due to the videos that we receive
 //Changing data means changing states 
 
-
+/**We'll use a functio library called lowdash whichc contains many utility functions like
+ *  debounce to throttle how often a function is called 
+ * We need to install this library using node package manager*/
 class App extends Component{
   constructor(props){
     super(props);
@@ -80,7 +83,7 @@ class App extends Component{
     //The first round of rendering can produce 0 videos and once they have all been fetched
     //The component will re-render in the callback function 
 
-    this.videoSearch('surfboards')
+    this.videoSearch('Chris Brown')
   
   }
 
@@ -108,9 +111,10 @@ class App extends Component{
   //And videodetail gets the initial selected video
 
   render(){
+    const videoSearch = _.debounce(term => {this.videoSearch(term)}, 300)
     return( 
       <div>
-        <SearchBar onSearchTermChange={term => this.videoSearch(term)} />
+        <SearchBar onSearchTermChange={videoSearch} />
         <VideoDetail video={this.state.selectedVideo} /> 
         <VideoList
           onVideoSelect={selectedVideo => this.setState({selectedVideo}) }
