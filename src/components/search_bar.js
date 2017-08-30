@@ -30,19 +30,64 @@ as classes
 //We refactored from a function based component to a class based component because we
 //Want to add functionality and properties...
 
+
+//Once searchbar has a state and its changed, the component will be re-rendered
+//Whenever a new instance of SearchBar gets called <SearchBar />, the constructor
+//Gets called and initializes that object - We also initialize Component with super
+
+  //Internal properties we want to change, update, the state of the component
+        //Will contain properties we want to record about the state
+        //In our case the term refers to user input, we need to update term based on the user input
+        //As the user starts typing, we need to update the term
+
 class SearchBar extends Component{
-    render(){
-        return <input onChange={event => console.log(event.target.value)} /> //JSX with regulasr JS variables - 
-                                                     //we wrap it in curly braces onChange is the event
-                                                    //this.inputchange is  the event handler
+    constructor(props){
+        super(props);
+
+        //Default value on initialization - instead of console.log, need to update state
+        //This is the only time we will write code this way to manipulate our state because
+        //creation is different then updating.
+        this.state = {term: 'Starting Value'}
+
+    }
+    render(){                            //Update state here in handler function
+        //Set new state by passing in object  - setState to update the state
+        //A bad way to do it - this.state.term = event.target.value - dont do it
+        //We need to tell react the state is changing so it can re-render
+                      
+         //Reference a JS variable inside of JSX, need curly brackets
+         //Updating components? Think state. How? this.setState({})
+
+         //New concept of control field / input / form element.
+         //Its an input field or form element that is set by the state, rather than the
+         //User input setting the state. We want the state to tell the input what the current
+         //Value should be. value={this.term.state} is a controlled field
+         //value = this.state.term actually provides us with two things. One is providing
+         //a default value for the input, without having to wait for user input
+         //the second is that it allows for reading input very easily, rather than having
+         //to use jquery for everything, we can just read the value by using this.state.term or w.e
+
+        
+
+        return (
+            <div className="search-bar">
+              <input 
+                onChange={event => this.onInputChange(event.target.value)} />
+            </div>
+        );
         //<input onChange={this.onInputChange}
+        //JSX with regulasr JS variables - 
+        //we wrap it in curly braces onChange is the event
+         //this.inputchange is  the event handler 
         
     }
 
-    /*onInputChange(event){
-        var target = event.target;
-        console.log(target.value)
-    }*/
+    onInputChange(term){
+
+        this.setState({term: term});
+        this.props.onSearchTermChange(term);
+
+    }
 }
 
 //WE only want to export the SearchBar component and not any surrounding code in the file

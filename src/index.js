@@ -5,15 +5,20 @@
 //--save saves it to our package.json file  which is a list of all the dependencies
 //that our project has
 
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-DOM';
+
+//YTSearch acts like a function which gets parameters of searchterm and api key
+import YTSearch from 'youtube-api-search';
+
 //For our own user-made files we need to include relative path, unlike downloaded folders and
 //dependencies which are entire namespaces.for Libraries that we installed with npm we can
 //just write name of the package
 import SearchBar from './components/search_bar';
+import VideoList from './components/video_list';
+import VideoDetail from './components/video_detail';
 
 const API_KEY = 'AIzaSyCXE7B7GWJhJ1262cLCr8JA4rar5zPqJB4';
-
 
 //Create components (views) that produce HTML using js (webpack and babel transpile)
 //The JSX and ES6 to standard JS the browser can run
@@ -45,14 +50,75 @@ const API_KEY = 'AIzaSyCXE7B7GWJhJ1262cLCr8JA4rar5zPqJB4';
 //by append to the html container. Index is the root of our application. One component
 //per file is the way to go. Best way for seperation
 
+//As of now, App is a functional component rather than a class component because
+//it has no concept of state
 
-const App = () => {
+//We need to update App to a class based component because its state is going to change
+//due to the fact that we are going to pass down information (downflow) as this is the
+//parent app and we are going to pass it down to the children components. this data
+//that we get inside the app is going to change due to the videos that we receive
+//Changing data means changing states 
+
+
+class App extends Component{
+  constructor(props){
+    super(props);
+
+    this.state = { 
+      videos: [],
+      selectedVideo: null
+     }; //Defaulted at video objects, We dont want to leave this empty
+                                //At startup because we dont want to show the user the data right away
+
+    //Callback returns data (like a get request) - returns a list of objects
+    //More specifically we are returning a list of videos. But our key name is also videos
+    //ES6 provides us with new functionality when keys and values are the same. ->
+    //One line statements
+    //Remember that JS is asynchronous so as we are fetching the videos we will continue
+    //Running our JS and perform the callback function once all videos have been returned
+    //This essentially means that it can continue rendering other components in the meantime
+    //The first round of rendering can produce 0 videos and once they have all been fetched
+    //The component will re-render in the callback function 
+
+    this.videoSearch('surfboards')
+  
+  }
+
+  videoSearch(term){
+    YTSearch({key: API_KEY, term: term}, (videos) => {
+    this.setState({ 
+        videos: videos,
+        selectedVideo: videos[0],
+
+       }); //this.setState({ videos: videos }) same as this.setState({ videos })
+    });
+  }
+
+  //Clearly our videoList needs access to videos list in state of app
+  //We need to pass data from parent component (app) to child component
+  //What do we do!? Define props!! wohoo- pass down from parent to child
+  //Whenever the app re-renders, VideoList will get the new list as well
+
+  //To select a video, we will pass down a callback function from App -> VideoList ->
+  //VideoListItem because App never interacts with VideoListItem, it only interacts
+  //With VideoList. However, VideoList does interact with VideoList item. That's where
+  //the connection lies. So we will pass it down.
+  //The way it works is that the function is passed all the way down to video list item
+  //And once the function is called (on a click), the app gets re-rendered 
+  //And videodetail gets the initial selected video
+
+  render(){
     return( 
       <div>
-        <SearchBar />
+        <SearchBar onSearchTermChange={term => this.videoSearch(term)} />
+        <VideoDetail video={this.state.selectedVideo} /> 
+        <VideoList
+          onVideoSelect={selectedVideo => this.setState({selectedVideo}) }
+          videos={this.state.videos}/> 
       </div>
     );
-}
+  }
+};
 
 //Step 2: A couple of wrong ways to approch the rendering to the DOM. Need to pass instance,
 //not class, to render
